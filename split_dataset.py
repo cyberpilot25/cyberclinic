@@ -15,13 +15,12 @@ df = df.reset_index(drop=True)
 # Define a dictionary with column names and their corresponding data types
 dtype_mapping = {
     'Timestamp': str,
-    'From Bank': int,
-    'Account': str,
-    'To Bank': int,
-    'Account': str,
-    'Amount Received': float,
+    'Sender bank code': int,
+    'Sender a/c number': str,
+    'Receiver bank code': int,
+    'Receiver a/c number': str,
     'Receiving Currency': str,
-    'Amount Paid': float,
+    'Amount transacted': float,
     'Payment Currency': str,
     'Payment Format': str,
     'Is Laundering': int,
