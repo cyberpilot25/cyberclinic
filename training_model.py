@@ -30,7 +30,6 @@ X_train = scaler.fit_transform(X_train)
 # Build the DNN model
 
 # Compile the model
-
 # Train the model
 
 # Predictions on the testing set
