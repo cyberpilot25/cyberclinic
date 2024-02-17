@@ -26,10 +26,10 @@ def generate_random_account_age():
     return round(random.uniform(0, 10), 1)
 
 # Generate dataset
-num_transactions = 5000
-num_unique_accounts = 500
-start_date = datetime(2023, 6, 1)
-end_date = start_date + timedelta(days=75)
+num_transactions = 5000 #number of transactions per bank
+num_unique_accounts = 500 #number of unique a/c
+start_date = datetime(2023, 10, 8)
+end_date = start_date + timedelta(days=7)#set number of days for transaction periood
 
 data = []
 
@@ -72,33 +72,53 @@ for bank_code in range(1, 11):
 def calculate_realistic_risk_score(sender_account_age, receiver_account_age, sender_country, receiver_country, amount_transacted, payment_format, transaction_type):
     # Your logic to calculate risk score based on the specified features
     # Add your own calculations based on the provided features
-    base_risk_score = 2.5  # Default base risk score
+    base_risk_score = 2.0  # Default base risk score
     
     # Example: Add or subtract based on conditions
-    if sender_country == 'Afghanistan':
-        base_risk_score += 1.0
-    elif sender_country == 'Germany':
+    if sender_country or sender_country == 'Afghanistan':
+        base_risk_score += 1.25
+    elif sender_country or sender_country == 'Germany':
+        base_risk_score += 0.5
+    elif sender_country or sender_country == 'India':
+        base_risk_score += 1
+    elif sender_country or sender_country == 'UK':
+        base_risk_score += 0.5
+    else:
         base_risk_score += 0.5
     
-    if receiver_country == 'Germany':
-        base_risk_score -= 0.5
-    elif receiver_country == 'Afghanistan':
-        base_risk_score += 0.8
-    
-    if amount_transacted > 10000:
-        base_risk_score += 0.8
+    if amount_transacted >= 350 or amount_transacted = 10000:
+        base_risk_score += 0.0
+    elif amount_transacted >= 10001 or amount_transacted = 50000:
+        base_risk_score += 1.0
+    else:
+        #amount_transacted >=50001 or amount_transacted = 100000:
+        base_risk_score += 2.0
     
     if payment_format == 'Cash':
-        base_risk_score += 1.2
+        base_risk_score += 2.0
+    elif payment_currency =='Cheque':
+        base_risk_score += 1.0
+    elif payment_currency =='Credit card':
+        base_risk_score += 1.0
+    elif payment_currency =='Reinvestment':
+        base_risk_score += 1.0
+    elif payment_currency =='Wire':
+        base_risk_score += 0.5
+    else:
+        #payment_currency =='ACH':
+        base_risk_score += 0.5
     
     if transaction_type == 'International':
+        base_risk_score += 1.5
+    else:
+        #transaction_type == 'Domestic':
         base_risk_score += 0.5
     
     # Ensure the risk score is within the valid range of 0 to 5
     return max(0, min(5, base_risk_score))
 
 # Generate transactions
-num_transactions_per_account = 100
+num_transactions_per_account = 200 #number of transactions per a/c
 for sender_bank_code in range(1, 11):
     sender_country_mapping = {
         1: 'India',
@@ -140,7 +160,7 @@ for sender_bank_code in range(1, 11):
             payment_currency = payment_currency_mapping[sender_country]
             
             payment_format = fake.random_element(elements=('Cheque', 'Credit Card', 'Reinvestment', 'ACH', 'Cash', 'Wire'))
-            amount_transacted = round(random.uniform(100, 50000), 2)
+            amount_transacted = round(random.uniform(300, 100000), 2)
             
             # Use TransactionType instead of is_international
             transaction_type = 'Domestic' if sender_country == receiver_country else 'International'
@@ -162,4 +182,4 @@ df = pd.DataFrame(data, columns=columns)
 
 # Save DataFrame to a CSV file
 df = df.sample(frac=1).reset_index(drop=True) #shuffles transactions
-df.to_csv("model_dataset.csv", index=False) #saves the output in csv format
+df.to_csv("generated_dataset.csv", index=False) #saves the output in csv format
