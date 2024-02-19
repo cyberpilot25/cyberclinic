@@ -89,6 +89,19 @@ def calculate_realistic_risk_score(sender_account_age, receiver_account_age, sen
         #sender_country or receiver_country == 'USA':
         base_risk_score += 0.4
     
+    #based on account age
+    if (sender_account_age or receiver_account_age) <= 2.5:
+        base_risk_score += 0.6
+    elif 2.6 < (sender_account_age or receiver_account_age) <= 4:
+        base_risk_score += 0.2
+    elif 4.1 < (sender_account_age or receiver_account_age) <= 6:
+        base_risk_score += 0.0
+    elif 6.1 < (sender_account_age or receiver_account_age) <= 8:
+        base_risk_score -= 0.2
+    else:
+    #8.1 < (sender_account_age or receiver_account_age) <= 10:
+        base_risk_score -=0.3
+        
     #based on transaction amount    
     if  300 <= amount_transacted == 10000:
         base_risk_score -= 0.5
@@ -166,10 +179,11 @@ for sender_bank_code in range(1, 11):
             }
             payment_currency = payment_currency_mapping[sender_country]
             
+            # add payment format and transaction amount
             payment_format = fake.random_element(elements=('Cheque', 'Credit Card', 'Reinvestment', 'ACH', 'Cash', 'Wire'))
             amount_transacted = round(random.uniform(300, 100000), 2) #set transaction amount range
             
-            # Use TransactionType instead of is_international
+            # Add Transaction Type as int or domestic
             transaction_type = 'Domestic' if sender_country == receiver_country else 'International'
             
             # Calculate realistic risk score
